@@ -28,6 +28,7 @@
     "react-responsive-carousel": "^3.2.23",
     "react-router-dom": "^6.26.2",
     "react-toastify": "^10.0.5",
+    "recharts": "^2.15.3",
     "swiper": "^11.1.14",
     "zod": "^3.23.8",
     "zustand": "^5.0.0-rc.2",
