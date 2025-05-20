@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { listUserCart } from "../../api/user";
-import { currentUser } from "../../api/auth"; // สมมุติว่า endpoint นี้มีใช้
+import { currentUser } from "../../api/auth";
 import useEcomStore from "../../store/ecom-store";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -8,53 +8,60 @@ import { numberFormat } from "../../utils/number";
 
 const SummaryCard = () => {
   const token = useEcomStore((state) => state.token);
+  const navigate = useNavigate();
+
   const [products, setProducts] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
+  const [user, setUser] = useState({ name: "", address: "", phone: "" });
 
   const [addressOption, setAddressOption] = useState("");
   const [customAddress, setCustomAddress] = useState("");
   const [addressSaved, setAddressSaved] = useState(false);
 
-  const [user, setUser] = useState({ name: "", address: "", phone: "" });
-
-  const navigate = useNavigate();
-
   useEffect(() => {
-    hdlGetUserCart(token);
-    hdlGetUserProfile(token);
-  }, []);
+    if (token) {
+      fetchUserCart(token);
+      fetchUserProfile(token);
+    }
+  }, [token]);
 
-  const hdlGetUserCart = (token) => {
-    listUserCart(token)
-      .then((res) => {
-        setProducts(res.data.products);
-        setCartTotal(res.data.cartTotal);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  const fetchUserCart = async (token) => {
+    try {
+      const res = await listUserCart(token);
+      setProducts(res.data.products);
+      setCartTotal(res.data.cartTotal);
+    } catch (err) {
+      console.error("Error fetching cart:", err);
+    }
   };
 
-  const hdlGetUserProfile = (token) => {
-    currentUser(token)
-      .then((res) => {
-        setUser(res.data); // ควรมั่นใจว่า res.data มี name, address, phone
-      })
-      .catch((err) => console.log(err));
+  const fetchUserProfile = async (token) => {
+    try {
+      const res = await currentUser(token);
+      const data = res.data;
+      setUser(data);
+
+      // ตั้งค่า default ที่อยู่ (ถ้ามี)
+      if (data?.address) {
+        setAddressOption(data.address);
+      }
+    } catch (err) {
+      console.error("Error fetching user:", err);
+    }
   };
 
-  const hdlSaveAddress = () => {
+  const handleSaveAddress = () => {
     const addressToSave = addressOption === "อื่นๆ" ? customAddress : addressOption;
 
     if (!addressToSave) {
       return toast.warning("กรุณาเลือกหรือกรอกที่อยู่");
     }
 
-    toast.success("บันทึกที่อยู่เรียบร้อยแล้ว");
     setAddressSaved(true);
+    toast.success("บันทึกที่อยู่เรียบร้อยแล้ว");
   };
 
-  const hdlGoToPayment = () => {
+  const handleProceedToPayment = () => {
     if (!addressSaved) {
       return toast.warning("กรุณาบันทึกที่อยู่ก่อน");
     }
@@ -73,12 +80,11 @@ const SummaryCard = () => {
             onChange={(e) => setAddressOption(e.target.value)}
             className="w-full p-3 border rounded-md"
           >
-            <option value="">-- กรุณาเลือกที่อยู่ --</option>
-            {user.address && (
-              <option value={user.address}>
-                {user.name} | {user.address} | โทร: {user.phone}
-              </option>
-            )}
+            <option value="">
+              {user?.address
+                ? `${user.name} | ${user.address} | โทร: ${user.phone}`
+                : "-- กรุณาเลือกที่อยู่ --"}
+            </option>
             <option value="อื่นๆ">อื่นๆ (กรอกเอง)</option>
           </select>
 
@@ -93,27 +99,27 @@ const SummaryCard = () => {
           )}
 
           <button
-            onClick={hdlSaveAddress}
+            onClick={handleSaveAddress}
             className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-700"
           >
             บันทึกที่อยู่
           </button>
         </div>
 
-        {/* Summary Section */}
+        {/* Order Summary Section */}
         <div className="w-full md:w-2/5 bg-white border shadow-lg p-5 rounded-xl space-y-4">
           <h1 className="text-xl font-semibold text-gray-800">คำสั่งซื้อของคุณ</h1>
 
           {products.map((item, index) => (
             <div key={index} className="flex justify-between border-b pb-2">
               <div>
-                <p>{item.product.title}</p>
+                <p>{item.product?.title}</p>
                 <p className="text-sm text-gray-600">
-                  จำนวน: {item.count} x {numberFormat(item.product.price)}
+                  จำนวน: {item.count} x {numberFormat(item.product?.price)}
                 </p>
               </div>
               <p className="text-red-500 font-bold">
-                {numberFormat(item.count * item.product.price)}
+                {numberFormat(item.count * item.product?.price)}
               </p>
             </div>
           ))}
@@ -125,7 +131,7 @@ const SummaryCard = () => {
           </div>
 
           <button
-            onClick={hdlGoToPayment}
+            onClick={handleProceedToPayment}
             className="w-full bg-green-500 text-white py-2 rounded-md hover:bg-green-600"
           >
             ดำเนินการชำระเงิน
