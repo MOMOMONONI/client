@@ -42,7 +42,7 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await axios.post("https://api-omega-seven-66.vercel.app/api/admin/orders", data);
+      await axios.post("https://api-omega-seven-66.vercel.app/api/register", data);
       toast.success("สมัครสมาชิกสำเร็จ");
     } catch (err) {
       const errMsg = err.response?.data?.message;
