@@ -54,6 +54,9 @@ const TableUsers = () => {
           <tr>
             <th className="p-3 border">ลำดับ</th>
             <th className="p-3 border">Email</th>
+            <th className="p-3 border">ชื่อ-นามสกุล</th>
+            <th className="p-3 border">ที่อยู่</th>
+            <th className="p-3 border">เบอร์โทร</th>
             <th className="p-3 border">สิทธิ์</th>
             <th className="p-3 border">สถานะ</th>
             <th className="p-3 border">จัดการ</th>
@@ -64,6 +67,9 @@ const TableUsers = () => {
             <tr key={el.id} className="hover:bg-[#E9E2D0]">
               <td className="p-2 border text-center text-[#5D3A00]">{i + 1}</td>
               <td className="p-2 border text-[#4B3621]">{el.email}</td>
+              <td className="p-2 border text-[#4B3621]">{el.name || "-"}</td>
+              <td className="p-2 border text-[#4B3621]">{el.address || "-"}</td>
+              <td className="p-2 border text-[#4B3621]">{el.phone || "-"}</td>
               <td className="p-2 border">
                 <select
                   onChange={(e) => handleChangeUserRole(el.id, e.target.value)}
@@ -99,7 +105,7 @@ const TableUsers = () => {
           ))}
           {users.length === 0 && (
             <tr>
-              <td colSpan="5" className="p-4 text-center text-gray-500">
+              <td colSpan="8" className="p-4 text-center text-gray-500">
                 ไม่มีข้อมูลผู้ใช้งาน
               </td>
             </tr>
