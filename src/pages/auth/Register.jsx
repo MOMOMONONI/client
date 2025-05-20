@@ -11,6 +11,8 @@ const registerSchema = z
     email: z.string().email({ message: "อีเมลไม่ถูกต้อง" }),
     password: z.string().min(8, { message: "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร" }),
     confirmPassword: z.string(),
+    phone: z.string().min(9, { message: "เบอร์โทรไม่ถูกต้อง" }),
+    address: z.string().min(5, { message: "กรุณากรอกที่อยู่" }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "รหัสผ่านไม่ตรงกัน",
@@ -40,7 +42,7 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await axios.post("https://api-omega-seven-66.vercel.app/api/register", data);
+      const res = await axios.post("http://localhost:5001/api/register", data);
       toast.success("สมัครสมาชิกสำเร็จ");
     } catch (err) {
       const errMsg = err.response?.data?.message;
@@ -109,6 +111,30 @@ const Register = () => {
             {errors.confirmPassword && (
               <p className="text-red-500 text-sm mt-1">{errors.confirmPassword.message}</p>
             )}
+          </div>
+
+          {/* ฟิลด์ใหม่: phone */}
+          <div>
+            <input
+              {...register("phone")}
+              placeholder="เบอร์โทร"
+              className={`w-full px-4 py-3 rounded-lg border border-brown-300 text-brown-700
+                focus:outline-none focus:ring-2 focus:ring-brown-400 focus:border-transparent
+                transition duration-300 ${errors.phone ? "border-red-500" : ""}`}
+            />
+            {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>}
+          </div>
+
+          {/* ฟิลด์ใหม่: address */}
+          <div>
+            <input
+              {...register("address")}
+              placeholder="ที่อยู่"
+              className={`w-full px-4 py-3 rounded-lg border border-brown-300 text-brown-700
+                focus:outline-none focus:ring-2 focus:ring-brown-400 focus:border-transparent
+                transition duration-300 ${errors.address ? "border-red-500" : ""}`}
+            />
+            {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address.message}</p>}
           </div>
 
           <button
