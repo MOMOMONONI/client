@@ -68,7 +68,19 @@ const SummaryCard = () => {
         <div className="w-full md:w-2/5 bg-white border shadow-lg p-5 rounded-xl space-y-4">
           <h1 className="text-xl font-semibold text-gray-800">ที่อยู่ในการจัดส่ง</h1>
 
-          
+          <select
+            value={addressOption}
+            onChange={(e) => setAddressOption(e.target.value)}
+            className="w-full p-3 border rounded-md"
+          >
+            <option value="">-- กรุณาเลือกที่อยู่ --</option>
+            {user.address && (
+              <option value={user.address}>
+                {user.name} | {user.address} | โทร: {user.phone}
+              </option>
+            )}
+            <option value="อื่นๆ">อื่นๆ (กรอกเอง)</option>
+          </select>
 
           {addressOption === "อื่นๆ" && (
             <textarea
