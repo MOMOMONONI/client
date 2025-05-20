@@ -96,14 +96,19 @@ const TableOrders = () => {
                   </td>
 
                   <td className="px-4 py-3 text-amber-800">
-                    <p>{item.orderedBy.name || "ไม่ระบุชื่อ"}</p>
-                    <p className="text-sm text-amber-600">{item.orderedBy.email}</p>
-                  </td>
+  <p className="font-semibold text-amber-900">
+    {item.orderedBy.name || "ไม่ระบุชื่อ"}
+  </p>
+  <p className="text-sm text-amber-700">{item.orderedBy.email}</p>
+  <p className="text-sm text-amber-700">{item.orderedBy.phone}</p>
+</td>
 
-                  <td className="px-4 py-3 text-amber-800">
-                    <p className="text-sm">{item.orderedBy.phone}</p>
-                    <p className="text-sm text-amber-600">{item.orderedBy.address}</p>
-                  </td>
+<td className="px-4 py-3 text-amber-800">
+  <p className="text-sm text-amber-700 whitespace-pre-wrap">
+    {item.orderedBy.address || "-"}
+  </p>
+</td>
+
 
                   <td className="px-4 py-3 text-amber-800">
                     {dateFormat(item.createdAt)}
