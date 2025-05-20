@@ -16,148 +16,100 @@ const TableOrders = () => {
   const handleGetOrder = (token) => {
     getOrdersAdmin(token)
       .then((res) => {
-        const sortedOrders = res.data.sort(
-          (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-        );
-        setOrders(sortedOrders);
+        setOrders(res.data);
       })
       .catch((err) => {
-        console.log(err);
+        console.error(err);
       });
   };
 
   const handleChangeOrderStatus = (token, orderId, orderStatus) => {
     changeOrderStatus(token, orderId, orderStatus)
-      .then(() => {
-        toast.success("อัปเดตสถานะสำเร็จ!");
+      .then((res) => {
+        toast.success("Update Status Success!");
         handleGetOrder(token);
       })
       .catch((err) => {
-        console.log(err);
-        toast.error("เกิดข้อผิดพลาดในการอัปเดตสถานะ");
+        console.error(err);
       });
   };
 
   const getStatusColor = (status) => {
     switch (status) {
       case "Not Process":
-        return "bg-amber-200 text-amber-800";
+        return "bg-gray-200";
       case "Processing":
-        return "bg-amber-300 text-amber-900";
+        return "bg-blue-200";
       case "Completed":
-        return "bg-green-200 text-green-800";
+        return "bg-green-200";
       case "Cancelled":
-        return "bg-red-200 text-red-800";
+        return "bg-red-200";
       default:
-        return "bg-gray-100 text-gray-700";
+        return "bg-gray-100";
     }
   };
 
-  const statusToThai = {
-    "Not Process": "ยังไม่ดำเนินการ",
-    "Processing": "กำลังดำเนินการ",
-    "Completed": "สำเร็จแล้ว",
-    "Cancelled": "ยกเลิกแล้ว",
-  };
-
   return (
-    <div className="container mx-auto p-4 bg-white rounded-md shadow-lg max-w-7xl">
-      <h2 className="text-2xl font-bold text-[#5D3A00] mb-4">📦 รายการคำสั่งซื้อ</h2>
+    <div className="container mx-auto p-4 bg-white shadow-md rounded-lg">
+      <h2 className="text-2xl font-semibold text-gray-700 mb-4">Order Management</h2>
       <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
+        <table className="min-w-full table-auto">
           <thead>
-            <tr className="bg-amber-100 border-b border-amber-300">
-              <th className="px-4 py-2 text-amber-900 text-left">ลำดับ</th>
-              <th className="px-4 py-2 text-amber-900 text-left">ผู้ใช้งาน</th>
-              <th className="px-4 py-2 text-amber-900 text-left">เบอร์ / ที่อยู่</th>
-              <th className="px-4 py-2 text-amber-900 text-left">วันที่</th>
-              <th className="px-4 py-2 text-amber-900 text-left">สินค้า</th>
-              <th className="px-4 py-2 text-amber-900 text-right">รวม</th>
-              <th className="px-4 py-2 text-amber-900 text-center">สถานะ</th>
-              <th className="px-4 py-2 text-amber-900 text-center">เปลี่ยนสถานะ</th>
+            <tr className="bg-gray-100 text-left border-b">
+              <th className="py-2 px-4">ลำดับ</th>
+              <th className="py-2 px-4">ผู้ใช้งาน</th>
+              <th className="py-2 px-4">วันที่</th>
+              <th className="py-2 px-4">สินค้า</th>
+              <th className="py-2 px-4">รวม</th>
+              <th className="py-2 px-4">สถานะ</th>
+              <th className="py-2 px-4">จัดการ</th>
             </tr>
           </thead>
-
           <tbody>
-            {orders.length === 0 ? (
-              <tr>
-                <td colSpan={8} className="text-center py-4 text-amber-700">
-                  ไม่มีรายการสั่งซื้อ
+            {orders?.map((item, index) => (
+              <tr key={index} className="border-b hover:bg-gray-50">
+                <td className="py-4 px-4 text-center">{index + 1}</td>
+                <td className="py-4 px-4">
+                  <p>{item.orderedBy.email}</p>
+                  <p>{item.orderedBy.address}</p>
+                </td>
+                <td className="py-4 px-4">{dateFormat(item.createdAt)}</td>
+                <td className="py-4 px-4">
+                  <ul className="space-y-1">
+                    {item.products?.map((product, idx) => (
+                      <li key={idx} className="text-sm text-gray-600">
+                        {product.product.title}{" "}
+                        <span className="text-xs text-gray-500">
+                          {product.count} x {numberFormat(product.product.price)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </td>
+                <td className="py-4 px-4">{numberFormat(item.cartTotal)}</td>
+                <td className="py-4 px-4">
+                  <span
+                    className={`${getStatusColor(item.orderStatus)} px-2 py-1 rounded-full text-center text-sm font-semibold`}
+                  >
+                    {item.orderStatus}
+                  </span>
+                </td>
+                <td className="py-4 px-4">
+                  <select
+                    value={item.orderStatus}
+                    onChange={(e) =>
+                      handleChangeOrderStatus(token, item.id, e.target.value)
+                    }
+                    className="border-gray-300 bg-gray-50 py-1 px-3 rounded-md"
+                  >
+                    <option>Not Process</option>
+                    <option>Processing</option>
+                    <option>Completed</option>
+                    <option>Cancelled</option>
+                  </select>
                 </td>
               </tr>
-            ) : (
-              orders.map((item, index) => (
-                <tr
-                  key={item.id}
-                  className="border-b border-amber-200 hover:bg-amber-50"
-                >
-                  <td className="px-4 py-3 text-amber-900 text-center">
-                    {index + 1}
-                  </td>
-
-                  <td className="px-4 py-3 text-amber-800">
-  <p className="font-semibold text-amber-900">
-    {item.orderedBy.name || "ไม่ระบุชื่อ"}
-  </p>
-  <p className="text-sm text-amber-700">{item.orderedBy.email}</p>
-  <p className="text-sm text-amber-700">{item.orderedBy.phone}</p>
-</td>
-
-<td className="px-4 py-3 text-amber-800">
-  <p className="text-sm text-amber-700 whitespace-pre-wrap">
-    {item.orderedBy.address || "-"}
-  </p>
-</td>
-
-
-                  <td className="px-4 py-3 text-amber-800">
-                    {dateFormat(item.createdAt)}
-                  </td>
-
-                  <td className="px-4 py-3 text-amber-800">
-                    <ul className="list-disc pl-5">
-                      {item.products?.map((product, i) => (
-                        <li key={i} className="mb-1">
-                          {product.product.title}{" "}
-                          <span className="text-sm text-amber-600">
-                            {product.count} x {numberFormat(product.product.price)}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </td>
-
-                  <td className="px-4 py-3 text-amber-900 text-right font-semibold">
-                    {numberFormat(item.cartTotal)}
-                  </td>
-
-                  <td className="px-4 py-3 text-center">
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full font-semibold ${getStatusColor(
-                        item.orderStatus
-                      )}`}
-                    >
-                      {statusToThai[item.orderStatus] || item.orderStatus}
-                    </span>
-                  </td>
-
-                  <td className="px-4 py-3 text-center">
-                    <select
-                      className="border border-amber-400 rounded-md px-2 py-1 focus:outline-none focus:ring-2 focus:ring-amber-400"
-                      value={item.orderStatus}
-                      onChange={(e) =>
-                        handleChangeOrderStatus(token, item.id, e.target.value)
-                      }
-                    >
-                      <option value="Not Process">ยังไม่ดำเนินการ</option>
-                      <option value="Processing">กำลังดำเนินการ</option>
-                      <option value="Completed">สำเร็จแล้ว</option>
-                      <option value="Cancelled">ยกเลิกแล้ว</option>
-                    </select>
-                  </td>
-                </tr>
-              ))
-            )}
+            ))}
           </tbody>
         </table>
       </div>
