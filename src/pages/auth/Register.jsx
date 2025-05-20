@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 
 const registerSchema = z
   .object({
+    name: z.string().min(2, { message: "กรุณากรอกชื่อ" }),
     email: z.string().email({ message: "อีเมลไม่ถูกต้อง" }),
     password: z.string().min(8, { message: "รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร" }),
     confirmPassword: z.string(),
@@ -42,7 +43,7 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     try {
-      const res = await axios.post("https://api-omega-seven-66.vercel.app/api/register", data);
+      await axios.post("https://api-omega-seven-66.vercel.app/api/register", data);
       toast.success("สมัครสมาชิกสำเร็จ");
     } catch (err) {
       const errMsg = err.response?.data?.message;
@@ -56,6 +57,20 @@ const Register = () => {
         <h2 className="text-3xl text-center font-extrabold text-brown-700 mb-6">สมัครสมาชิก</h2>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+
+          {/* name */}
+          <div>
+            <input
+              {...register("name")}
+              placeholder="ชื่อ-นามสกุล"
+              className={`w-full px-4 py-3 rounded-lg border border-brown-300 text-brown-700
+                focus:outline-none focus:ring-2 focus:ring-brown-400 focus:border-transparent
+                transition duration-300 ${errors.name ? "border-red-500" : ""}`}
+            />
+            {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message}</p>}
+          </div>
+
+          {/* email */}
           <div>
             <input
               {...register("email")}
@@ -67,6 +82,7 @@ const Register = () => {
             {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
           </div>
 
+          {/* password */}
           <div>
             <input
               {...register("password")}
@@ -76,9 +92,7 @@ const Register = () => {
                 focus:outline-none focus:ring-2 focus:ring-brown-400 focus:border-transparent
                 transition duration-300 ${errors.password ? "border-red-500" : ""}`}
             />
-            {errors.password && (
-              <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>
-            )}
+            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password.message}</p>}
 
             {watch().password?.length > 0 && (
               <div className="flex mt-2">
@@ -99,6 +113,7 @@ const Register = () => {
             )}
           </div>
 
+          {/* confirmPassword */}
           <div>
             <input
               {...register("confirmPassword")}
@@ -113,7 +128,7 @@ const Register = () => {
             )}
           </div>
 
-          {/* ฟิลด์ใหม่: phone */}
+          {/* phone */}
           <div>
             <input
               {...register("phone")}
@@ -125,7 +140,7 @@ const Register = () => {
             {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone.message}</p>}
           </div>
 
-          {/* ฟิลด์ใหม่: address */}
+          {/* address */}
           <div>
             <input
               {...register("address")}
@@ -137,9 +152,10 @@ const Register = () => {
             {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address.message}</p>}
           </div>
 
+          {/* submit */}
           <button
             type="submit"
-            className="w-full py-3 bg-brown-600 hover:bg-brown-700 border-red-500 font-semibold rounded-lg 
+            className="w-full py-3 bg-brown-600 hover:bg-brown-700 text-white font-semibold rounded-lg 
             transition duration-300 shadow-md hover:shadow-xl"
           >
             สมัครสมาชิก
