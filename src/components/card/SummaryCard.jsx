@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { listUserCart } from "../../api/user";
+import { currentUser } from "../../api/auth"; // สมมุติว่า endpoint นี้มีใช้
 import useEcomStore from "../../store/ecom-store";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
@@ -14,10 +15,13 @@ const SummaryCard = () => {
   const [customAddress, setCustomAddress] = useState("");
   const [addressSaved, setAddressSaved] = useState(false);
 
+  const [user, setUser] = useState({ name: "", address: "", phone: "" });
+
   const navigate = useNavigate();
 
   useEffect(() => {
     hdlGetUserCart(token);
+    hdlGetUserProfile(token);
   }, []);
 
   const hdlGetUserCart = (token) => {
@@ -29,6 +33,14 @@ const SummaryCard = () => {
       .catch((err) => {
         console.log(err);
       });
+  };
+
+  const hdlGetUserProfile = (token) => {
+    currentUser(token)
+      .then((res) => {
+        setUser(res.data); // ควรมั่นใจว่า res.data มี name, address, phone
+      })
+      .catch((err) => console.log(err));
   };
 
   const hdlSaveAddress = () => {
@@ -62,9 +74,11 @@ const SummaryCard = () => {
             className="w-full p-3 border rounded-md"
           >
             <option value="">-- กรุณาเลือกที่อยู่ --</option>
-            <option value="บ้าน">บ้าน</option>
-            <option value="โรงเรียน">โรงเรียน</option>
-            <option value="บ้านใหม่">บ้านใหม่</option>
+            {user.address && (
+              <option value={user.address}>
+                {user.name} | {user.address} | โทร: {user.phone}
+              </option>
+            )}
             <option value="อื่นๆ">อื่นๆ (กรอกเอง)</option>
           </select>
 
