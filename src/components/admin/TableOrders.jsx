@@ -62,12 +62,14 @@ const TableOrders = () => {
 
   return (
     <div className="container mx-auto p-4 bg-white rounded-md shadow-lg max-w-7xl">
+      <h2 className="text-2xl font-bold text-[#5D3A00] mb-4">📦 รายการคำสั่งซื้อ</h2>
       <div className="overflow-x-auto">
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-amber-100 border-b border-amber-300">
               <th className="px-4 py-2 text-amber-900 text-left">ลำดับ</th>
               <th className="px-4 py-2 text-amber-900 text-left">ผู้ใช้งาน</th>
+              <th className="px-4 py-2 text-amber-900 text-left">เบอร์ / ที่อยู่</th>
               <th className="px-4 py-2 text-amber-900 text-left">วันที่</th>
               <th className="px-4 py-2 text-amber-900 text-left">สินค้า</th>
               <th className="px-4 py-2 text-amber-900 text-right">รวม</th>
@@ -79,7 +81,7 @@ const TableOrders = () => {
           <tbody>
             {orders.length === 0 ? (
               <tr>
-                <td colSpan={7} className="text-center py-4 text-amber-700">
+                <td colSpan={8} className="text-center py-4 text-amber-700">
                   ไม่มีรายการสั่งซื้อ
                 </td>
               </tr>
@@ -94,7 +96,12 @@ const TableOrders = () => {
                   </td>
 
                   <td className="px-4 py-3 text-amber-800">
-                    <p>{item.orderedBy.email}</p>
+                    <p>{item.orderedBy.name || "ไม่ระบุชื่อ"}</p>
+                    <p className="text-sm text-amber-600">{item.orderedBy.email}</p>
+                  </td>
+
+                  <td className="px-4 py-3 text-amber-800">
+                    <p className="text-sm">{item.orderedBy.phone}</p>
                     <p className="text-sm text-amber-600">{item.orderedBy.address}</p>
                   </td>
 
