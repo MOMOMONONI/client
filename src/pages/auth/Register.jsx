@@ -155,7 +155,7 @@ const Register = () => {
           {/* submit */}
           <button
             type="submit"
-            className="w-full py-3 bg-brown-600 hover:bg-brown-700 text-white font-semibold rounded-lg 
+            className="w-full py-3 bg-brown-600 hover:bg-brown-700 text-black font-semibold rounded-lg 
             transition duration-300 shadow-md hover:shadow-xl"
           >
             สมัครสมาชิก
